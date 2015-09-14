@@ -27,19 +27,23 @@ export class LockLog extends Component {
 
 	render () {
 		const rows = this.state.entries.map(entry => {
+			const onClick = (entry.event === 'error') ? function () {
+			} : this.toggleShowState.bind(this, entry.key);
 			const body = (this.state.showStates[entry.key])
 				? (<LockState
 				state={this.props.provider.calculateState(this.state.entries, entry.key)}/>)
 				: '';
+			const className = (entry.event === 'error') ? style.error : '';
+			const event = (entry.event === 'error') ? 'Error on ' + entry.params.operation : entry.event;
 			return (
-				<tr key={entry.key}
-					onClick={this.toggleShowState.bind(this, entry.key)}>
+				<tr key={entry.key} className={className}
+					onClick={onClick}>
 					<td className={style.time}><Timestamp
 						value={entry.time * 1000}
 						relative
 						titleFormat="HH:mm:ss.SSS"/>
 					</td>
-					<td className={style.event}>{entry.event}</td>
+					<td className={style.event}>{event}</td>
 					<td className={style.path}>{entry.path} {body}</td>
 					<td className={style.type}>
 						<LockType type={entry.params.type}/>
