@@ -66,8 +66,8 @@ export class App extends Component {
 						<div id="app-settings-content"
 							 style={this.state.showSettings?{display:'block'}:{}}>
 							<h2>
-								<label for="log-timeout">Save entries
-									htmlFor</label>
+								<label htmlFor="log-timeout">Save entries
+									for</label>
 							</h2>
 							<input id="log-timeout" type="number"
 								   onChange={this.setTimeout}
