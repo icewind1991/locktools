@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<info>
+	<id>locktools</id>
+	<name>Lock Tools</name>
+	<description>UI and API for debugging and testing transactional locking</description>
+	<licence>AGPL</licence>
+	<author>Robin Appelman</author>
+
+	<dependencies>
+		<owncloud min-version="8.1"/>
+	</dependencies>
+</info>

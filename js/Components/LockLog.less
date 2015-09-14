@@ -1,0 +1,35 @@
+.locklog {
+  width: 100%;
+  table-layout: fixed;
+
+  thead {
+    position: sticky;
+  }
+
+  th {
+    border-bottom: 1px solid #eee;
+    background-color: #f8f8f8;
+  }
+
+  tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+
+  td, th {
+    padding: 10px;
+  }
+
+  .type, .event {
+    width: 120px;
+  }
+  .time {
+    width: 200px;
+  }
+
+  .empty td {
+    color: red;
+    padding-top: 100px;
+    font-size: 200%;
+    text-align: center;
+  }
+}
