@@ -24,6 +24,7 @@ namespace OCA\LockTools\Controller;
 use OCA\LockTools\Log\LockLog;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\TemplateResponse;
+use OCP\IConfig;
 use OCP\IRequest;
 
 /**
@@ -38,27 +39,38 @@ class LogController extends Controller {
 	private $lockLog;
 
 	/**
+	 * @var IConfig
+	 */
+	private $config;
+
+	/**
 	 * LogController constructor.
 	 *
 	 * @param string $appName
 	 * @param IRequest $request
 	 * @param LockLog $lockLog
+	 * @param IConfig $config
 	 */
 	public function __construct(
 		$appName,
 		IRequest $request,
-		LockLog $lockLog
+		LockLog $lockLog,
+		IConfig $config
 	) {
 		parent::__construct($appName, $request);
 		$this->lockLog = $lockLog;
+		$this->config = $config;
 	}
 
-	/**
-	 * @NoCSRFRequired
-	 */
 	public function get() {
 		return $this->lockLog->getLog();
 	}
 
+	public function timeout() {
+		return $this->config->getAppValue('locktools', 'ttl', 600);
+	}
 
+	public function setTimeout($timeout) {
+		$this->config->setAppValue('locktools', 'ttl', (int)$timeout);
+	}
 }

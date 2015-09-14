@@ -2,8 +2,22 @@ const TYPE_SHARED = 1;
 const TYPE_EXCLUSIVE = 2;
 
 export class LogProvider {
-	async getEntries () {
+	getEntries () {
 		return $.get(OC.generateUrl('/apps/locktools/log'));
+	}
+
+	getTimeout () {
+		return $.get(OC.generateUrl('/apps/locktools/timeout'));
+	}
+
+	setTimeout (timeout) {
+		return $.ajax({
+			'url': OC.generateUrl('/apps/locktools/timeout'),
+			'type': 'PUT',
+			'data': {
+				timeout: timeout
+			}
+		});
 	}
 
 	calculateState (entries, afterKey) {

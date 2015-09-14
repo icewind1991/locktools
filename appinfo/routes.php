@@ -11,5 +11,7 @@
 return ['routes' => [
 	// page
 	['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
-	['name' => 'log#get', 'url' => '/log', 'verb' => 'GET']
+	['name' => 'log#get', 'url' => '/log', 'verb' => 'GET'],
+	['name' => 'log#timeout', 'url' => '/timeout', 'verb' => 'GET'],
+	['name' => 'log#setTimeout', 'url' => '/timeout', 'verb' => 'PUT']
 ]];
