@@ -22,7 +22,6 @@ export class App extends Component {
 
 	componentDidMount = async() => {
 		const timeout = await this.logProvider.getTimeout();
-		console.log(timeout);
 		this.setState({timeout});
 	};
 

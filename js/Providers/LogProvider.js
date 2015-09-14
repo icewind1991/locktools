@@ -21,7 +21,6 @@ export class LogProvider {
 	}
 
 	calculateState (entries, afterKey) {
-		console.log(afterKey);
 		const reversedEntries = entries.slice().reverse();
 		const filteredEntries = reversedEntries.filter(entry=>entry.key <= afterKey);
 		return filteredEntries.reduce(this.addLockEvent, {});
@@ -70,5 +69,6 @@ export class LogProvider {
 				}
 				return state;
 		}
+		return state;
 	}
 }

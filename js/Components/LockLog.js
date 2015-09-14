@@ -15,7 +15,6 @@ export class LockLog extends Component {
 	componentDidMount = async() => {
 		const provider = this.props.provider;
 		const entries = await provider.getEntries();
-		console.log(entries);
 		this.setState({entries});
 	};
 
@@ -33,7 +32,7 @@ export class LockLog extends Component {
 				? (<LockState
 				state={this.props.provider.calculateState(this.state.entries, entry.key)}/>)
 				: '';
-			const className = (entry.event === 'error') ? style.error : '';
+			const className = (entry.event === 'error') ? style.error : style.event;
 			const event = (entry.event === 'error') ? 'Error on ' + entry.params.operation : entry.event;
 			return (
 				<tr key={entry.key} className={className}
