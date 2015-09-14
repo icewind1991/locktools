@@ -21,6 +21,7 @@
 
 namespace OCA\LockTools\AppInfo;
 
+use Doctrine\DBAL\Schema\View;
 use OC\Files\Filesystem;
 use OCA\LockTools\Log\LockLog;
 use OCA\LockTools\Monitor\Monitor;
@@ -42,12 +43,14 @@ class Application extends App {
 				$server->getConfig()->getAppValue('locktools', 'ttl', 600)
 			);
 		});
+		$container->registerAlias('LockLog', '\OCA\LockTools\Log\LockLog');
 
 		$container->registerService('\OCA\LockTools\Monitor\Monitor', function (IContainer $c) {
 			return new Monitor(
 				$c->query('\OCA\LockTools\Log\LockLog')
 			);
 		});
+		$container->registerAlias('Monitor', '\OCA\LockTools\Monitor\Monitor');
 	}
 
 	public function setupWrapper() {
@@ -56,5 +59,14 @@ class Application extends App {
 		$storageFactory->addStorageWrapper('locktools', function ($mountPoint, Storage $storage) use ($monitor) {
 			return new MonitorWrapper(['storage' => $storage, 'monitor' => $monitor, 'mountpoint' => $mountPoint]);
 		});
+	}
+
+	public function getViewForPath($path) {
+		$path = Filesystem::normalizePath($path);
+		list(, $user) = explode('/', $path, 3);
+//		\OC_Util::tearDownFS();
+		\OC_Util::setupFS($user);
+		$view = Filesystem::getView();
+		return [$view, $view->getRelativePath($path)];
 	}
 }

@@ -8,6 +8,41 @@
 
 /** @var $this OC\Route\Router */
 
+
+use OCP\API;
+
+API::register(
+	'get',
+	'/apps/locktools/log',
+	['OCA\LockTools\Api\OCS', 'getLog'],
+	'locktools',
+	API::ADMIN_AUTH
+);
+
+API::register(
+	'put',
+	'/apps/locktools/lock',
+	['OCA\LockTools\Api\OCS', 'newLock'],
+	'locktools',
+	API::ADMIN_AUTH
+);
+
+API::register(
+	'put',
+	'/apps/locktools/changelock',
+	['OCA\LockTools\Api\OCS', 'changeLock'],
+	'locktools',
+	API::ADMIN_AUTH
+);
+
+API::register(
+	'put',
+	'/apps/locktools/unlock',
+	['OCA\LockTools\Api\OCS', 'unLock'],
+	'locktools',
+	API::ADMIN_AUTH
+);
+
 return ['routes' => [
 	// page
 	['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
