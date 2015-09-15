@@ -1,6 +1,6 @@
 import React, {Component} from 'react/addons';
 
-import {SideBar, Entry, Separator, App as AppContainer, Content, ControlBar} from 'oc-react-components';
+import {SideBar, Entry, Separator, App as AppContainer, Content, ControlBar, Settings} from 'oc-react-components';
 import {LockLog} from './Components/LockLog';
 
 import {LogProvider} from './Providers/LogProvider';
@@ -57,24 +57,16 @@ export class App extends Component {
 						Log
 					</Entry>
 
-					<div id="app-settings">
-						<div id="app-settings-header">
-							<button className="settings-button"
-									onClick={this.toggleSettings}>Settings
-							</button>
-						</div>
-						<div id="app-settings-content"
-							 style={this.state.showSettings?{display:'block'}:{}}>
-							<h2>
-								<label htmlFor="log-timeout">Save entries
-									for</label>
-							</h2>
-							<input id="log-timeout" type="number"
-								   onChange={this.setTimeout}
-								   value={this.state.timeout/60}
-								></input><span>Minutes</span>
-						</div>
-					</div>
+					<Settings>
+						<h2>
+							<label htmlFor="log-timeout">Save entries
+								for</label>
+						</h2>
+						<input id="log-timeout" type="number"
+							   onChange={this.setTimeout}
+							   value={this.state.timeout/60}
+							></input><span>Minutes</span>
+					</Settings>
 				</SideBar>
 
 				<Content>
