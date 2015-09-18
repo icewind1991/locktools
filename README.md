@@ -4,9 +4,9 @@ Debug and test tools for ownCloud transactional locking
 
 ## Lock Viewer
 
-Get a list of all lock operations and view the lock state at any point
+Get a list of all lock operations with live updating
 
-![lockview](https://i.imgur.com/MDGs2Cb.png)
+![lockview](https://i.imgur.com/sdygqx1.png)
 
 ## Lock API
 
