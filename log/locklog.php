@@ -21,6 +21,7 @@
 
 namespace OCA\LockTools\Log;
 
+use OCA\LockTools\Queue\Queue;
 use OCP\IMemcache;
 
 class LockLog {
@@ -35,26 +36,37 @@ class LockLog {
 	private $ttl;
 
 	/**
+	 * @var null|Queue
+	 */
+	private $queue;
+
+	/**
 	 * LockLog constructor.
 	 *
 	 * @param IMemcache $memCache
 	 * @param int $ttl (optional) defaults to 10 min
+	 * @param Queue|null $queue
 	 */
-	public function __construct(IMemcache $memCache, $ttl = 600) {
+	public function __construct(IMemcache $memCache, $ttl = 600, $queue = null) {
 		$this->memCache = $memCache;
 		$this->ttl = $ttl;
 		$this->memCache->add('key', 0);
+		$this->queue = $queue;
 	}
 
 	public function log($time, $path, $event, $params = []) {
 		$key = $this->memCache->inc('key');
-		$this->memCache->set($key, [
+		$entry = [
 			'key' => $key,
 			'time' => $time,
 			'path' => $path,
 			'event' => $event,
 			'params' => $params
-		], $this->ttl);
+		];
+		$this->memCache->set($key, $entry, $this->ttl);
+		if ($this->queue) {
+			$this->queue->push($entry);
+		}
 	}
 
 	public function getLog() {

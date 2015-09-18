@@ -1,7 +1,12 @@
 import React, {Component} from 'react/addons';
 
 import {SideBar, Entry, Separator, App as AppContainer, Content, ControlBar, Settings} from 'oc-react-components';
-import {LockLog} from './Components/LockLog';
+import Timestamp from 'react-time';
+import ReactList from 'react-list';
+
+import {LockType} from './Components/LockType';
+import {LockState} from './Components/LockState'
+import {ToggleEntry} from './Components/ToggleEntry';
 
 import {LogProvider} from './Providers/LogProvider';
 
@@ -9,9 +14,10 @@ import style from '../css/app.less';
 
 export class App extends Component {
 	state = {
-		page: 'log',
-		showSettings: false,
-		timeout: 600
+		entries: [],
+		showState: 0,
+		timeout: 600,
+		live: true
 	};
 
 	constructor () {
@@ -21,19 +27,61 @@ export class App extends Component {
 	}
 
 	componentDidMount = async() => {
+		const entries = await this.logProvider.getEntries();
 		const timeout = await this.logProvider.getTimeout();
-		this.setState({timeout});
+		this.setState({entries, timeout});
+		this.listen();
 	};
 
-	onClick (page) {
-		this.setState({
-			page: page
+	listen () {
+		this.logProvider.listen(this.state.entries[0].key, (lock) => {
+			const entries = this.state.entries;
+			entries.unshift(lock);
+			this.setState({entries});
 		});
 	}
 
-	toggleSettings = ()=> {
-		const showSettings = !this.state.showSettings;
-		this.setState({showSettings});
+	toggleShowState (showState) {
+		this.setState({showState});
+	}
+
+	renderRow = (index, key) => {
+		const entry = this.state.entries[index];
+		const onClick = (entry.event === 'error') ? function () {
+		} : this.toggleShowState.bind(this, entry.key);
+		const className = (entry.event === 'error') ? style.error : style.event;
+		const event = (entry.event === 'error') ? 'Error on ' + entry.params.operation : entry.event;
+		return (
+			<tr key={key} className={className}
+				onClick={onClick}>
+				<td className={style.time}><Timestamp
+					value={entry.time * 1000}
+					relative
+					titleFormat="HH:mm:ss.SSS"/>
+				</td>
+				<td className={style.event}>{event}</td>
+				<td className={style.path}>{entry.path}</td>
+				<td className={style.type}>
+					<LockType type={entry.params.type}/>
+				</td>
+			</tr>
+		)
+	};
+
+	renderer = (items, ref) => {
+		return (<table className={style.locklog}>
+			<thead>
+			<tr>
+				<th className={style.time}>Time</th>
+				<th className={style.event}>Event</th>
+				<th className={style.path}>Path</th>
+				<th className={style.type}>Type</th>
+			</tr>
+			</thead>
+			<tbody ref={ref}>
+			{items}
+			</tbody>
+		</table>);
 	};
 
 	setTimeout = (event) => {
@@ -42,20 +90,17 @@ export class App extends Component {
 		this.setTimeoutOnServer(timeout);
 	};
 
-	render () {
-		let page = null;
-		if (this.state.page === 'log') {
-			page = (
-				<LockLog provider={this.logProvider}/>
-			);
-		}
+	toggleLive = (live) => {
+		this.logProvider.listening = live;
+	};
 
+	render () {
 		return (
 			<AppContainer appId="react_oc_boilerplate">
-				<SideBar withIcon={true}>
-					<Entry icon='home' onClick={this.onClick.bind(this,'log')}>
-						Log
-					</Entry>
+				<SideBar>
+					<ToggleEntry active={this.state.live}
+								 onChange={this.toggleLive}>Live
+						Update</ToggleEntry>
 
 					<Settings>
 						<h2>
@@ -70,7 +115,12 @@ export class App extends Component {
 				</SideBar>
 
 				<Content>
-					{page}
+					<ReactList
+						itemRenderer={this.renderRow}
+						itemsRenderer={this.renderer}
+						length={this.state.entries.length}
+						type='uniform'
+						/>
 				</Content>
 			</AppContainer>
 		);

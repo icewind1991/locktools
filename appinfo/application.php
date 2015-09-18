@@ -26,6 +26,7 @@ use OC\Files\Filesystem;
 use OCA\LockTools\Log\LockLog;
 use OCA\LockTools\Monitor\Monitor;
 use OCA\LockTools\Monitor\MonitorWrapper;
+use OCA\LockTools\Queue\Queue;
 use OCP\AppFramework\App;
 use OCP\Files\Storage;
 use OCP\IContainer;
@@ -40,7 +41,8 @@ class Application extends App {
 			$server = $c->query('ServerContainer');
 			return new LockLog(
 				$server->getMemCacheFactory()->create('locklog'),
-				$server->getConfig()->getAppValue('locktools', 'ttl', 600)
+				$server->getConfig()->getAppValue('locktools', 'ttl', 600),
+				$c->query('Queue')
 			);
 		});
 		$container->registerAlias('LockLog', '\OCA\LockTools\Log\LockLog');
@@ -51,6 +53,16 @@ class Application extends App {
 			);
 		});
 		$container->registerAlias('Monitor', '\OCA\LockTools\Monitor\Monitor');
+
+		$container->registerService('\OCA\LockTools\Queue\Queue', function (IContainer $c) {
+			/** @var \OC\Server $server */
+			$server = $c->query('ServerContainer');
+			return new Queue(
+				$server->getMemCacheFactory()->create('locklog_queue')
+			);
+		});
+
+		$container->registerAlias('Queue', '\OCA\LockTools\Queue\Queue');
 	}
 
 	public function setupWrapper() {

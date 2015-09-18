@@ -1,7 +1,12 @@
+import EventSource from 'event-source';
+
 const TYPE_SHARED = 1;
 const TYPE_EXCLUSIVE = 2;
 
 export class LogProvider {
+	listening = false;
+	source = null;
+
 	getEntries () {
 		return $.get(OC.generateUrl('/apps/locktools/log'));
 	}
@@ -70,5 +75,32 @@ export class LogProvider {
 				return state;
 		}
 		return state;
+	}
+
+	listen (lastId, cb) {
+		this.listening = true;
+
+		const source = new EventSource(OC.generateUrl(`/apps/locktools/listen?lastLock=${lastId}`));
+		source.addEventListener('__internal__', (data) => {
+			if (data === 'close') {
+				console.log('closed from remote');
+				source.close();
+				setTimeout(this.listen.bind(this, lastId, cb), 100);
+			}
+		});
+
+		source.addEventListener('lock', (e) => {
+			const lock = JSON.parse(e.data);
+			lastId = lock.key;
+			if (this.listening) {
+				cb(lock);
+			}
+		});
+		this.source = source;
+		return source;
+	}
+
+	stopListening () {
+		this.listening = false;
 	}
 }
